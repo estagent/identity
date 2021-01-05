@@ -1,0 +1,27 @@
+{
+  "name": "@revgaming/identity",
+  "version": "1.0.1",
+  "author": "estagent <estagent@gmail.com>",
+  "description": "user and userAgent identity module for @revgaming/global",
+  "keywords": [
+    "javascript",
+    "revgaming",
+    "global",
+    "user",
+    "tracker",
+    "mitigation",
+    "session",
+    "ddos",
+    "userAgent",
+    "laravel",
+    "vue"
+  ],
+  "homepage": "https://github.com/estagent/identity",
+  "main": "src/index.js",
+  "dependencies": {
+    "@revgaming/session": "^1.0.7",
+    "bowser": "^2.11.0",
+    "crypto-js": "^4.0.0",
+    "uuid": "^8.3.2"
+  }
+}
