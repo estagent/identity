@@ -1,52 +1,25 @@
-import Bowser from 'bowser'
-import {getIdentifier, getIdentifications, setStorageKeyName} from './storage'
-import {updateHeadersWithIdentifications} from './builders'
-import {
-    IncrementAgentSessionsOnCreated,
-    IncrementAgentHitsOnInitialized,
-    IncrementUserLoginsOnAuthenticated,
-    IncrementUserHitsOnMounted,
-    setCurrentUserOnAuthenticated,
-    setCurrentAgentOnInitialized,
-    setCurrentUserOnMounted,
-} from './listeners'
+import {KEYMAP, initStorage, getIdentity, getSignature} from './storage'
+import addHeadersFromIdentities from './factories/addHeadersFromIdentities'
+import {Events as SessionEvents} from '@revgaming/session'
+import Agents from './agents'
+import Users from './users'
+import {Events} from './events'
+import {initHooks} from './hooks'
 
-import {getUsers} from "./users";
-import {getAgents} from "./agents";
-
-export {getIdentifier, getIdentifications, getUsers, getAgents}
-export {updateHeadersWithIdentifications}
-
-let parser = Bowser.getParser(window.navigator.userAgent)
-
-export const agentParser = () => parser
-export const agentResult = () => parser.getResult()
-export const agentIs = (string, withAliases = false) =>
-    parser.is(string, withAliases)
+export {Users, Agents, Events, KEYMAP}
+export {addHeadersFromIdentities, getIdentity, getSignature}
 
 export const bootIdentity = (opts = {}) => {
 
-    if (opts.key)
-        setStorageKeyName(opts.key)
+  window.addEventListener(SessionEvents.SessionInitialized, () =>
+    initStorage(opts),
+  )
+  Agents.initialise()
+  Users.initialise()
 
-    if (opts.hasOwnProperty('agents')) {
-        setCurrentAgentOnInitialized()
-        IncrementAgentHitsOnInitialized()
-        IncrementAgentSessionsOnCreated()
-    }
-    if (opts.hasOwnProperty('users')) {
-        setCurrentUserOnMounted()
-        setCurrentUserOnAuthenticated()
-        IncrementUserHitsOnMounted()
-        IncrementUserLoginsOnAuthenticated()
-    }
+  if (opts.hasOwnProperty('hooks')) initHooks(opts.hooks)
 
-    return {
-        getIdentifier: getIdentifier,
-        getIdentifications: getIdentifications,
-        agentParser: agentParser,
-        agentResult: agentResult,
-        agentIs: agentIs,
-    }
+  return {
+    getIdentity: getIdentity,
+  }
 }
-

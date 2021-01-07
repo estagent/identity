@@ -1,47 +1,110 @@
 import {v4 as uuid4} from 'uuid'
+import {dispatchIdentityCreated} from './events'
 
 let keyName = 'identity'
+let identity
 
-export const setStorageKeyName = (key) => keyName = key;
+export const KEYMAP = {
+  created: 'ct',
+  updated: 'ut',
+  identity: 'i',
+  signature: 's',
+  currentAgent: 'ca',
+  currentUser: 'cu',
+  hits: 'hc',
+  logins: 'lc',
+  sessions: 'sc',
+  agents: '___a',
+  users: '___u',
+  agent: 'ua',
+  timestamps: ['created', 'updated'],
+}
+
+const setStorageKeyName = key => (keyName = key)
 
 const decodeIdentifications = str => {
-    return JSON.parse(str)
+  return JSON.parse(str)
 }
 const encodeIdentifications = data => {
-    return JSON.stringify(data)
+  return JSON.stringify(data)
 }
+const makeIdentity = () => uuid4()
+
 const saveIdentifications = (data = {}) => {
-    data['updatedAt'] = Date.now()
-    localStorage.setItem(keyName, encodeIdentifications(data))
+  data[KEYMAP.updated] = Date.now()
+  localStorage.setItem(keyName, encodeIdentifications(data))
 }
+export const getIdentifications = keys => {
+  let str = localStorage.getItem(keyName)
+  if (str) {
+    const identifications = decodeIdentifications(str)
+    if (keys) {
+      if (keys instanceof Array) {
+        const data = {}
+        for (let key of keys) {
+          const realKey = KEYMAP[key]
+          data[key] = identifications[realKey]
+        }
+        return data
+      } else if (keys instanceof Object) {
+        const data = {}
+        for (let key of Object.keys(keys)) {
+          const realKey = keys[key]
+          data[key] = identifications[realKey]
+        }
+        return data
+      } else if (typeof keys === 'string') {
+        return identifications[keys]
+      } else {
+        throw `unsupported identification key type (${typeof keys})`
+      }
+    } else return identifications
+  } else {
+    createIdentifications()
+    return getIdentifications(keys)
+  }
+}
+
 const createIdentifications = () => {
-    saveIdentifications({
-        uuid: uuid4(),
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        ua: {},
-        ui: {},
-    })
+  const identity = makeIdentity()
+  saveIdentifications({
+    [KEYMAP.identity]: identity,
+    [KEYMAP.created]: Date.now(),
+    [KEYMAP.updated]: Date.now(),
+    [KEYMAP.signature]: null,
+    [KEYMAP.users]: {},
+    [KEYMAP.agents]: {},
+  })
+  dispatchIdentityCreated({
+    identity: identity,
+  })
 }
-export const getIdentifier = () => {
-    const data = getIdentifications()
-    return data['uuid']
+
+export const getIdentity = () => {
+  if (!identity) identity = getIdentifications(KEYMAP.identity)
+  return identity
 }
-export const getIdentifications = () => {
-    let str = localStorage.getItem(keyName)
-    if (str) return decodeIdentifications(str)
-    else {
-        createIdentifications()
-        return getIdentifications()
-    }
+
+export const initStorage = opts => {
+  if (opts.key) setStorageKeyName(opts.key)
+  identity = getIdentifications(KEYMAP.identity)
 }
+
+export const getSignature = () => {
+  return getIdentifications(KEYMAP.signature)
+}
+export const SingIdentifier = (sig) => updateIdentifications(KEYMAP.signature, sig);
+
+export const getTimestamps = () => {
+  return getIdentifications(KEYMAP.timestamps)
+}
+
 export const updateIdentifications = (mixed, values) => {
-    const data = getIdentifications()
-    if (mixed instanceof Object) {
-        for (let key of Object.keys(mixed))
-            data[key] = mixed[key]
-    } else if (typeof mixed === "string") {
-        data[mixed] = values
-    }
-    saveIdentifications(data)
+  const data = getIdentifications()
+  if (mixed instanceof Object) {
+    for (let key of Object.keys(mixed)) data[key] = mixed[key]
+  } else if (typeof mixed === 'string') {
+    data[mixed] = values
+  }
+  saveIdentifications(data)
 }
