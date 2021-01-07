@@ -5,11 +5,11 @@ import {
 } from './listeners'
 import {getUsers} from './storage'
 
-export default {
-  getIdentifications: getUsers,
-  initialise: (opts = {}) => {
-    setCurrentUserOnMounted()
-    IncrementUserHitsOnMounted()
-    IncrementUserLoginsOnAuthenticated()
-  },
+export default function () {
+  setCurrentUserOnMounted()
+  IncrementUserHitsOnMounted()
+  IncrementUserLoginsOnAuthenticated()
+  return {
+    getUsers: getUsers,
+  }
 }

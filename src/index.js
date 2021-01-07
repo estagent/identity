@@ -1,25 +1,34 @@
-import {KEYMAP, initStorage, getIdentity, getSignature} from './storage'
+import {
+  KEYMAP,
+  InitStorageOnSessionInitialized,
+  getIdentity,
+  getSignature,
+} from './storage'
 import addHeadersFromIdentities from './factories/addHeadersFromIdentities'
-import {Events as SessionEvents} from '@revgaming/session'
 import Agents from './agents'
 import Users from './users'
 import {Events} from './events'
 import {initHooks} from './hooks'
+import {getParser, MATCHERS} from './parser'
 
-export {Users, Agents, Events, KEYMAP}
-export {addHeadersFromIdentities, getIdentity, getSignature}
+let agents
+let users
+
+export {Events}
+export {KEYMAP, getIdentity, getSignature}
+export {addHeadersFromIdentities}
+export {MATCHERS, getParser}
 
 export const bootIdentity = (opts = {}) => {
-
-  window.addEventListener(SessionEvents.SessionInitialized, () =>
-    initStorage(opts),
-  )
-  Agents.initialise()
-  Users.initialise()
-
+  InitStorageOnSessionInitialized(opts)
+  agents = new Agents()
+  users = new Users()
   if (opts.hasOwnProperty('hooks')) initHooks(opts.hooks)
 
   return {
     getIdentity: getIdentity,
+    getUsers: users.getUsers,
+    getAgents: agents.getAgents,
+    getParser: getParser,
   }
 }

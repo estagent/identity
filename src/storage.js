@@ -1,5 +1,6 @@
 import {v4 as uuid4} from 'uuid'
 import {dispatchIdentityCreated} from './events'
+import {Events as SessionEvents} from '@revgaming/session'
 
 let keyName = 'identity'
 let identity
@@ -18,6 +19,15 @@ export const KEYMAP = {
   users: '___u',
   agent: 'ua',
   timestamps: ['created', 'updated'],
+}
+
+export const InitStorageOnSessionInitialized = opts => {
+  if (opts.key) setStorageKeyName(opts.key)
+  window.addEventListener(SessionEvents.SessionInitialized, initStorage)
+}
+
+const initStorage = () => {
+  identity = getIdentifications(KEYMAP.identity)
 }
 
 const setStorageKeyName = key => (keyName = key)
@@ -85,15 +95,11 @@ export const getIdentity = () => {
   return identity
 }
 
-export const initStorage = opts => {
-  if (opts.key) setStorageKeyName(opts.key)
-  identity = getIdentifications(KEYMAP.identity)
-}
-
 export const getSignature = () => {
   return getIdentifications(KEYMAP.signature)
 }
-export const SingIdentifier = (sig) => updateIdentifications(KEYMAP.signature, sig);
+export const SingIdentifier = sig =>
+  updateIdentifications(KEYMAP.signature, sig)
 
 export const getTimestamps = () => {
   return getIdentifications(KEYMAP.timestamps)
