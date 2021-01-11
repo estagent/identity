@@ -4,21 +4,15 @@ import {SingIdentifier} from '../storage'
 import {Events} from '../events'
 import paths from './paths'
 
-const store = () =>
+const update = () =>
   window.addEventListener(Events.IdentityCreated, event => {
     const identity = getEventDetail(event, 'identity')
     const request = () => {
-      return Request.post(paths.identities, {
-        identity: identity,
-      }).then(signature => SingIdentifier(signature))
+      return Request.put(
+        paths.identities.concat('/').concat(identity)
+      ).then(signature => SingIdentifier(signature))
     }
-
-    request().catch(error => {
-      if (error.response.status === 419)
-        window.addEventListener(SessionEvents.SessionMounted, request, {
-          once: true,
-        })
-    })
+    window.addEventListener(SessionEvents.SessionMounted, request, {once: true})
   })
 
-export default [store]
+export default [update]

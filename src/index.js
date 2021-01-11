@@ -9,7 +9,6 @@ import Agents from './agents'
 import Users from './users'
 import {Events} from './events'
 import {initHooks} from './hooks'
-import {getParser, MATCHERS} from './parser'
 
 let agents
 let users
@@ -17,7 +16,6 @@ let users
 export {Events}
 export {KEYMAP, getIdentity, getSignature}
 export {addHeadersFromIdentities}
-export {MATCHERS, getParser}
 
 export const bootIdentity = (opts = {}) => {
   InitStorageOnSessionInitialized(opts)
@@ -29,6 +27,5 @@ export const bootIdentity = (opts = {}) => {
     getIdentity: getIdentity,
     getUsers: users.getUsers,
     getAgents: agents.getAgents,
-    getParser: getParser,
   }
 }

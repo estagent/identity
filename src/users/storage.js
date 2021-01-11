@@ -6,7 +6,8 @@ let userId
 export const getUsers = () => getIdentifications(KEYMAP.users) ?? {}
 export const IncrementUserHits = () => incrementUserCounter(KEYMAP.hits)
 export const IncrementUserLogins = () => incrementUserCounter(KEYMAP.logins)
-export const SignUserIdentification = sig => updateUserIdentification(KEYMAP.signature, sig)
+export const SignUserIdentification = sig =>
+  updateUserIdentification(KEYMAP.signature, sig)
 
 export const getUserIdentification = (id = userId) => {
   const users = getUsers()
@@ -39,11 +40,17 @@ const createUserIdentification = () => {
   }
 }
 
-const updateUserIdentification = (attributes = {}) => {
+const updateUserIdentification = (mixed, value) => {
   const data = getUserIdentification() ?? createUserIdentification()
-  for (let key of Object.keys(attributes)) {
-    data[key] = attributes[key]
+
+  if (mixed instanceof Object) {
+    for (let key of Object.keys(mixed)) {
+      data[key] = mixed[key]
+    }
+  } else {
+    data[mixed] = value
   }
+
   data[KEYMAP.updated] = Date.now()
   const users = getUsers()
   users[userId] = data

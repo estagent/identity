@@ -9,7 +9,9 @@ export const IncrementAgentSessionCount = () =>
   incrementAgentCounter(KEYMAP.sessions)
 export const IncrementAgentHits = () => incrementAgentCounter(KEYMAP.hits)
 export const SignAgentIdentification = sig =>
-  updateAgentIdentification(KEYMAP.signature, sig)
+  updateAgentIdentification({
+    [KEYMAP.signature]: sig,
+  })
 
 export const makeId = ua => MD5(ua).toString()
 export const getAgentIdentification = (id = agentId) => {
@@ -47,11 +49,17 @@ const createAgentIdentification = () => {
   }
 }
 
-const updateAgentIdentification = (attributes = {}) => {
+const updateAgentIdentification = (mixed,value) => {
   const data = getAgentIdentification() ?? createAgentIdentification()
-  for (let key of Object.keys(attributes)) {
-    data[key] = attributes[key]
+
+  if (mixed instanceof Object) {
+    for (let key of Object.keys(mixed)) {
+      data[key] = mixed[key]
+    }
+  } else {
+    data[mixed] = value
   }
+
   data[KEYMAP.updated] = Date.now()
   const agents = getAgents()
   agents[agentId] = data

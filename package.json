@@ -1,6 +1,6 @@
 {
   "name": "@revgaming/identity",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "estagent <estagent@gmail.com>",
   "description": "user and userAgent identity module for @revgaming/global",
   "keywords": [
@@ -20,7 +20,7 @@
   "main": "src/index.js",
   "dependencies": {
     "@revgaming/helpers": "^1.0.12",
-    "@revgaming/session": "^3.0.2",
+    "@revgaming/session": "file:../session",
     "bowser": "^2.11.0",
     "crypto-js": "^4.0.0",
     "uuid": "^8.3.2"

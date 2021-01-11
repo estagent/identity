@@ -13,10 +13,10 @@ export const initHooks = opts => {
           identityHooks.forEach(callback => callback())
           break
         case 'users':
-          agentHooks.forEach(callback => callback())
+          userHooks.forEach(callback => callback())
           break
         case 'agents':
-          userHooks.forEach(callback => callback())
+          agentHooks.forEach(callback => callback())
           break
       }
     }
