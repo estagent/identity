@@ -20,7 +20,7 @@
   "main": "src/index.js",
   "dependencies": {
     "@revgaming/helpers": "^1.0.12",
-    "@revgaming/session": "file:../session",
+    "@revgaming/session": "^3.0.3",
     "bowser": "^2.11.0",
     "crypto-js": "^4.0.0",
     "uuid": "^8.3.2"
