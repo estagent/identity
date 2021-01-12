@@ -1,6 +1,6 @@
 {
   "name": "@revgaming/identity",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "estagent <estagent@gmail.com>",
   "description": "user and userAgent identity module for @revgaming/global",
   "keywords": [

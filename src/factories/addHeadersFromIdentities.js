@@ -2,7 +2,12 @@ import {getIdentifications, KEYMAP} from '../storage'
 
 // const exports = ['identity', 'created', 'updated', 'signature']
 
-const defaultKey = key => 'X-'.concat(key.toUpperCase())
+const defaultKey = key =>
+  customHeaders.hasOwnProperty(key)
+    ? customHeaders[key]
+    : 'X-'.concat(key.toUpperCase())
+
+const customHeaders = {}
 
 const makeHeaderKey = (ident, header) => {
   if (header === undefined) return defaultKey(ident)
@@ -13,7 +18,10 @@ const makeHeaderKey = (ident, header) => {
     header.constructor === Object
   )
     return defaultKey(ident)
-  else if (typeof header === 'string') return header
+  else if (typeof header === 'string') {
+    customHeaders[ident] = header
+    return header
+  }
   throw `Error: identification header key type (${typeof header}) not supported`
 }
 
@@ -43,7 +51,7 @@ export default opts => {
   }
   // if array, identification keys are expected
   if (opts instanceof Object) addHeaders(opts)
-  else if (typeof opts == 'string') addHeader('identity', opts)
+  else if (typeof opts == 'string') addHeader(opts)
   else if (opts === true) addHeader('identity')
   return headers
 }

@@ -1,6 +1,6 @@
 import {v4 as uuid4} from 'uuid'
-import {dispatchIdentityCreated} from './events'
 import {Events as SessionEvents} from '@revgaming/session'
+import {dispatchIdentityCreated, dispatchIdentitySigned} from './events'
 
 let keyName = 'identity'
 let identity
@@ -98,8 +98,14 @@ export const getIdentity = () => {
 export const getSignature = () => {
   return getIdentifications(KEYMAP.signature)
 }
-export const SingIdentifier = sig =>
-  updateIdentifications(KEYMAP.signature, sig)
+export const isIdentitySigned = () => getSignature() !== null
+export const SingIdentifier = signature => {
+  updateIdentifications(KEYMAP.signature, signature)
+  dispatchIdentitySigned({
+    signature: signature,
+  })
+}
+
 
 export const getTimestamps = () => {
   return getIdentifications(KEYMAP.timestamps)
