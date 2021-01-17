@@ -21,10 +21,8 @@ export const getAgentIdentification = (id = agentId) => {
 export const setCurrentAgent = UA => {
   agentId = makeId(UA)
   updateIdentifications(KEYMAP.currentAgent, agentId)
-  createIfNotExists({
-    UA: UA,
-    id: agentId,
-  })
+  createIfNotExists({UA: UA, id: agentId})
+  checkSignature(agentId)
 }
 
 const createIfNotExists = data => {
@@ -38,6 +36,17 @@ const createIfNotExists = data => {
   }
 }
 
+export const checkSignature = id => {
+  const agent = getAgentIdentification(id)
+  if (agent && !agent[KEYMAP.signature])
+    dispatchAgentIdentified({
+      agent: {
+        id: id,
+        UA: agent[KEYMAP.agent],
+      },
+    })
+}
+
 const updateAgents = data => updateIdentifications(KEYMAP.agents, data)
 
 const createAgentIdentification = () => {
@@ -49,7 +58,7 @@ const createAgentIdentification = () => {
   }
 }
 
-const updateAgentIdentification = (mixed,value) => {
+const updateAgentIdentification = (mixed, value) => {
   const data = getAgentIdentification() ?? createAgentIdentification()
 
   if (mixed instanceof Object) {
